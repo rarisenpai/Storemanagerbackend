@@ -14,11 +14,13 @@ in_memory_datastore = {
    "soda": {"name": "SODA", "Category": "Drinks", "Quantity": 341},
    "shirt": {"name": "SHIRT", "Category":"Clothing", "Quantity": 112},
 }
-if __name__ == '__main__': 
-    @app.get('/api/v1/products')
-    def list_products():
-        return {'products': list(in_memory_datastore.values())}
 
-    @app.get('/api/v1/products/<productsId>')
-    def get_products(productsId):
-        return in_memory_datastore[productsId]
+
+
+@app.route('/api/v1/products')
+def list_products():
+    return {'products': list(in_memory_datastore.values())}
+
+@app.route('/api/v1/products/<productsId>')
+def get_products(productsId):
+    return in_memory_datastore[productsId]

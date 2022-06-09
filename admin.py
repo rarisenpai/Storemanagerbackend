@@ -25,18 +25,22 @@ in_memory_datastore_sales = {"rice":{"RICE":290},
                              "shirt":{"SHIRT":121}
                              }
 
-if __name__ == '__main__': 
-    @app.route('/api/v1/products')
-    def list_products():
-        return {'products': list(in_memory_datastore.values())}
+@app.route('/api/v1/sales')
+def list_sales():
+    return {"Sales": list(in_memory_datastore_sales.values())}
 
-    @app.route('/api/v1/products/<productsId>')
-    def get_products(productsId):
-        return in_memory_datastore[productsId]
-    @app.route('/api/v1/sales')
-    def list_sales():
-        return {"Sales": list(in_memory_datastore_sales.values())}
+@app.route('/api/v1/sales/<salesId>')
+def get_sales(salesId):
+    return in_memory_datastore_sales[salesId]
 
-    @app.route('/api/v1/sales/<salesId>')
-    def get_sales(salesId):
-        return in_memory_datastore_sales[salesId]
+@app.route('/api/v1/products',methods=['POST'])
+def create_product(product):
+    product_id = product['name']
+    in_memory_datastore[product_id] = product
+    return product
+
+@app.route('/api/v1/sales', methods=['POST'])
+def create_sales(sale):
+    sales_id = sale['name']
+    in_memory_datastore_sales[sales_id] = sale
+    return sale
