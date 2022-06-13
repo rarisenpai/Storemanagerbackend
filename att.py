@@ -15,6 +15,18 @@ products = [
     {"shirt": {"name": "SHIRT", "Category":"Clothing", "Quantity": 112}},
 ]
 
+sales = [
+    {"rice":{"RICE":290}},
+    {"beans":{"BEANS":321}},
+    {"sunglasses":{"SUNGLASSES":402}},
+    {"scarves":{"SCARVES":212}},
+    {"milkshakes":{"MILKSHAKES":232}},
+    {"sportshoes":{"SPORTSHOES":321}},
+    {"soda":{"SODA":412}},
+    {"tea":{"TEA":321}},
+    {"coffee":{"COFFEE":412}},
+    {"shirt":{"SHIRT":121}}
+]
 
 
 @app.route('/')
@@ -32,3 +44,9 @@ def get_products(productsId):
             return product[productsId]
         else:
             return {'error': 'Product not found'}
+        
+@app.route('/api/v1/sales', methods=['POST'])
+def create_sales():
+    new = request.get_json()
+    sales.append(new)
+    return new
