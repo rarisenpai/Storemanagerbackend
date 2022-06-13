@@ -62,9 +62,3 @@ def create_product():
     new = request.get_json()
     products.append(new)
     return new
-
-@app.route('/api/v1/sales', methods=['POST'])
-def create_sales():
-    new = request.get_json()
-    sales.append(new)
-    return new
