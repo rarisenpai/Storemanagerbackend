@@ -1,31 +1,32 @@
-from flask import Flask, request, jsonify, make_response
+'''Using Flask to create a REST api with endpoints to fetch and post data.
+It uses flask_httpauth to authenticate and offer permissions depending on your role'''
+
+from flask import Flask, request, jsonify
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
-
-app = Flask(__name__)
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
 users = {
-    "admin1": generate_password_hash("admin"),
+    "admin": generate_password_hash("admin"),
     "attendant": generate_password_hash("attendant")
 }
 
 roles = {
-    "admin1": "admin",
+    "admin": "admin",
     "attendant": "attendant"
 }
 
 @auth.verify_password
 def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username), password):
+    '''verify login'''
+    if username in users and check_password_hash(users.get(username), password):
         return username
 
-    
 @auth.get_user_roles
 def get_user_roles(username):
+    '''get roles'''
     return roles.get(username)
 ...
 products = [
@@ -57,39 +58,51 @@ sales = [
 @app.route('/')
 @auth.login_required
 def index():
-    return "Hello, {}!".format(auth.current_user())
+    '''returns a greeting to the user'''
+    return f"Hello, {auth.current_user()}!"
 
 @app.route('/api/v1/products')
 @auth.login_required(role=['admin','attendant'])
 def list_products():
+    '''gets all products'''
     return jsonify(products)
 
 @app.route('/api/v1/products/<productsId>')
 @auth.login_required(role=['admin','attendant'])
-def get_products(productsId):
+def get_products(products_id):
+    '''gets specific product'''
     for product in products:
-        if productsId in product:
-            return product[productsId]
-        else:
-            return {'error': 'Product not found'}
-        
+        if products_id in product:
+            return product[products_id]
+        return {'error': 'Product not found'}
+
 @app.route('/api/v1/sales')
 @auth.login_required(role='admin')
 def list_sales():
+    '''gets all sales'''
     return jsonify(sales)
 
 @app.route('/api/v1/sales/<salesId>')
 @auth.login_required(role='admin')
-def get_sales(salesId):
+def get_sales(sales_id):
+    '''gets a specific sale order'''
     for sale in sales:
-        if salesId in sale:
-            return sale[salesId]
-        else:
-            return {'error': 'sale not found'}
-        
+        if sales_id in sale:
+            return sale[sales_id]
+        return {'error': 'sale not found'}
+
+@app.route('/api/v1/products', methods=['POST'])
+@auth.login_required(role='admin')
+def create_product():
+    '''Creates a new product'''
+    new = request.get_json()
+    products.append(new)
+    return new
+
 @app.route('/api/v1/sales', methods=['POST'])
 @auth.login_required(role=['admin','attendant'])
 def create_sales():
+    '''creates a new sale order'''
     new = request.get_json()
     sales.append(new)
     return new
